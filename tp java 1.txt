@@ -1,0 +1,162 @@
+Manipulation des flux d'octets
+Question 1 : LectureFichierBinaire.java
+
+import java.io.FileInputStream;
+import java.io.IOException;
+
+public class LectureFichierBinaire {
+    public static void main(String[] args) {
+        String filePath = "exemple.bin"; // Remplacez par le chemin de votre fichier
+
+        try (FileInputStream fis = new FileInputStream(filePath)) {
+            int octet;
+            while ((octet = fis.read()) != -1) {
+                System.out.print(octet + " ");
+            }
+        } catch (IOException e) {
+            System.err.println("Erreur lors de la lecture du fichier : " + e.getMessage());
+        }
+    }
+}
+Question 2 : Copier un fichier binaire
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+public class CopierFichierBinaire {
+    public static void main(String[] args) {
+        String sourcePath = "source.bin"; // Chemin du fichier source
+        String destinationPath = "destination.bin"; // Chemin du fichier de destination
+
+        try (FileInputStream fis = new FileInputStream(sourcePath);
+             FileOutputStream fos = new FileOutputStream(destinationPath)) {
+
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = fis.read(buffer)) != -1) {
+                fos.write(buffer, 0, bytesRead);
+            }
+
+            System.out.println("Le fichier a été copié avec succès !");
+        } catch (IOException e) {
+            System.err.println("Erreur lors de la copie : " + e.getMessage());
+        }
+    }
+}
+II. Manipulation des flux de caractères
+Question 3 : LectureTexte.java
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
+public class LectureTexte {
+    public static void main(String[] args) {
+        String filePath = "livres.txt";
+
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String ligne;
+            while ((ligne = br.readLine()) != null) {
+                System.out.println(ligne);
+            }
+        } catch (IOException e) {
+            System.err.println("Erreur lors de la lecture du fichier texte : " + e.getMessage());
+        }
+    }
+}
+Question 4 : Écriture dans un fichier texte
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
+public class EcrireFichierTexte {
+    public static void main(String[] args) {
+        String inputFile = "livres.txt";
+        String outputFile = "sortie.txt";
+
+        try (BufferedReader br = new BufferedReader(new FileReader(inputFile));
+             BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile))) {
+
+            String ligne;
+            while ((ligne = br.readLine()) != null) {
+                bw.write(ligne);
+                bw.newLine();
+            }
+
+            System.out.println("Le contenu a été écrit dans le fichier sortie.txt !");
+        } catch (IOException e) {
+            System.err.println("Erreur lors de la lecture/écriture : " + e.getMessage());
+        }
+    }
+}
+III. Sérialisation et désérialisation d'objets
+Question 5 : Classe Livre.java
+
+import java.io.Serializable;
+
+public class Livre implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    private String titre;
+    private String auteur;
+    private int anneePublication;
+
+    public Livre(String titre, String auteur, int anneePublication) {
+        this.titre = titre;
+        this.auteur = auteur;
+        this.anneePublication = anneePublication;
+    }
+
+    @Override
+    public String toString() {
+        return "Livre [Titre=" + titre + ", Auteur=" + auteur + ", Année de publication=" + anneePublication + "]";
+    }
+}
+Question 6 : SerialisationBibliotheque.java
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+public class SerialisationBibliotheque {
+    public static void main(String[] args) {
+        List<Livre> bibliotheque = new ArrayList<>();
+        bibliotheque.add(new Livre("Livre A", "Auteur A", 2000));
+        bibliotheque.add(new Livre("Livre B", "Auteur B", 2010));
+        bibliotheque.add(new Livre("Livre C", "Auteur C", 2020));
+
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("bibliotheque.ser"))) {
+            oos.writeObject(bibliotheque);
+            System.out.println("Les livres ont été sérialisés avec succès !");
+        } catch (IOException e) {
+            System.err.println("Erreur lors de la sérialisation : " + e.getMessage());
+        }
+    }
+}
+Question 7 : Désérialisation et affichage
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.util.List;
+
+public class DeserialisationBibliotheque {
+    public static void main(String[] args) {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("bibliotheque.ser"))) {
+            List<Livre> bibliotheque = (List<Livre>) ois.readObject();
+
+            System.out.println("Liste des livres désérialisés :");
+            for (Livre livre : bibliotheque) {
+                System.out.println(livre);
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("Erreur lors de la désérialisation : " + e.getMessage());
+        }
+    }
+}
